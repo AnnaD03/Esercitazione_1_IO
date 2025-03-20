@@ -3,14 +3,14 @@
 #include <string>
 #include <iomanip>
 
-double map_values(double val)
+double map_values(double &val)
 {
 	int a = 1;
 	int b = 5;
 	int c = -1;
 	int d = 2;
 	
-	double new_value = c + (d-c)*(val-a)/(b-a);
+	double new_value = c + (d - c) * (val - a) / (b - a);
 	
 	return new_value;
 }
@@ -18,35 +18,34 @@ double map_values(double val)
 int main()
 {
 	const std::string ifilename = "data.txt"; 
-	const std::string ofilename = "results.txt";
+	const std::string ofilename = "result.txt";
 	
     std::ifstream ifs(ifilename); 
 	std::ofstream ofs(ofilename);
 	
-    if (ifs.fail()) {
-        std::cerr << "Can't open the file " << ifilename << std::endl;
+    if (ifs.fail()) //controllo errori nell'apertura corretta del file data.txt
+	{
+        std::cerr << "Errore nell'apertura del file " << ifilename << std::endl; 
         return 1;
     }
 	
-	int index = 1;
-	double value = 0;
-	std::string line;
+	double value; //variabile ausiliaria in cui si memorizzano i valori nelle righe lette
+	double sum = 0.0;
+	double mean = 0.0;
+	unsigned int index = 1;
 	
-	ofs << "# N Mean\n";
+	ofs << "# N Mean" << std::endl;
 
-    while (!ifs.eof()) {
-		for(; std::getline(ifs, line); ) {
-			value += map_values(std::stod(line)); //è sbgliato stod avendo usato getline-> da modificare con istream stream...
-			double mean = value/index;
-			ofs << index << " " << std::setprecision(16) << std::scientific << mean << "\n";
-			index++;
-		}
+    while (ifs >> value) 
+	{
+		sum += map_values(value);
+		mean = sum/index;
+		ofs << index << " " << std::setprecision(16) << std::scientific << mean << std::endl;
+		index++;
     }
 	
 	ifs.close();
 	ofs.close();
-	
-	std::cout << "File " << ofilename << " created" << std::endl;
 	
     return 0;
 }
